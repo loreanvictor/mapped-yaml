@@ -1,0 +1,53 @@
+{
+  "name": "mapped-yaml",
+  "version": "0.0.1",
+  "description": "A simple yaml parser providing source map",
+  "main": "dist/commonjs/index.js",
+  "module": "dist/es/index.js",
+  "types": "dist/es/index.d.ts",
+  "files": [
+    "dist/commonjs",
+    "dist/es"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "test": "jest",
+    "coverage": "jest --coverage",
+    "build-commonjs": "tsc -p conf/typescript/commonjs.json",
+    "build-es": "tsc -p conf/typescript/es.json",
+    "build": "npm run build-commonjs && npm run build-es",
+    "prepack": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/loreanvictor/mapped-yaml.git"
+  },
+  "keywords": [
+    "yaml",
+    "source-map",
+    "parser"
+  ],
+  "author": "Eugene Ghanizadeh Khoub",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/loreanvictor/mapped-yaml/issues"
+  },
+  "homepage": "https://github.com/loreanvictor/mapped-yaml#readme",
+  "dependencies": {
+    "yaml": "^2.1.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.18.6",
+    "@babel/preset-env": "^7.18.6",
+    "@sindresorhus/tsconfig": "^3.0.1",
+    "@types/jest": "^28.1.4",
+    "@typescript-eslint/eslint-plugin": "^5.30.0",
+    "@typescript-eslint/parser": "^5.30.0",
+    "babel-jest": "^28.1.2",
+    "eslint": "^8.18.0",
+    "jest": "^28.1.2",
+    "ts-jest": "^28.0.5",
+    "ts-node": "^10.8.1",
+    "typescript": "^4.7.4"
+  }
+}
