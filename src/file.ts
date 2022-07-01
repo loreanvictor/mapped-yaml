@@ -5,11 +5,14 @@ export interface Position {
   character: number
 }
 
+
 export interface Range {
   start: Position
   end: Position
 }
 
+
+// TODO: add some range / position / offset validation as well
 export class File {
   readonly lines: string[]
 
@@ -26,10 +29,18 @@ export class File {
     for (let i = 0; i < this.lines.length; i++) {
       const line = this.lines[i]!
       if (cursor + line.length > offset) {
-        return {
+        const res = {
           line: i,
           character: offset - cursor
         }
+
+        // CORRECTION FOR NEWLINE CHARACTERS
+        if (res.character === -1 && i !== 0) {
+          res.line -= 1
+          res.character = this.lines[res.line]!.length
+        }
+
+        return res
       }
 
       cursor += line.length + 1
@@ -46,44 +57,46 @@ export class File {
 
   range(
     range: Range,
-    { surrounding, highlight }: { surrounding: number, highlight?: (c: string) => string} = { surrounding: 0 }
-  ): string {
+    { surrounding, highlight }: { surrounding?: number, highlight?: (c: string) => string} = {}
+  ) {
+    surrounding = surrounding || 0
     highlight = highlight || (c => c)
 
     const start = range.start.line - surrounding
     const end = range.end.line + surrounding
 
-    let pre = '', main = '', post = ''
+    const result: {[lineno: number]: {content: string, surround: boolean}} = {}
 
-    if (range.start.line < range.end.line) {
-      main = [
-        this.lines[range.start.line]!.slice(range.start.character),
-        ...this.lines
-          .slice(range.start.line + 1, range.end.line),
-        this.lines[range.end.line]!.slice(0, range.end.character)
-      ].join('\n')
-    } else {
-      main = this.lines[range.start.line]!.slice(range.start.character, range.end.character)
+    for (let i = Math.max(0, start); i <= Math.min(end, this.lines.length - 1); i++) {
+      const line = this.lines[i]!
+      const lineno = i
+      const surround = i < range.start.line || i > range.end.line
+      let content = ''
+
+      if (lineno === range.start.line && lineno === range.end.line) {
+        content =
+          line.slice(0, range.start.character) +
+          highlight(line.slice(range.start.character, range.end.character)) +
+          line.slice(range.end.character)
+      } else if (lineno === range.start.line) {
+        content = line.slice(0, range.start.character) + highlight(line.slice(range.start.character))
+      } else if (lineno === range.end.line) {
+        content = highlight(line.slice(0, range.end.character)) + line.slice(range.end.character)
+      } else if (lineno > range.start.line && lineno < range.end.line) {
+        content = highlight(line)
+      } else {
+        content = line
+      }
+
+      result[lineno] = { content, surround }
     }
 
-    if (surrounding > 0) {
-      if (range.start.line > 0) {
-        pre += this.lines.slice(start, range.start.line).join('\n') + '\n'
-      }
-
-      if (range.start.character > 0) {
-        pre += this.lines[range.start.line]!.slice(0, range.start.character)
-      }
-
-      if (range.end.character < this.lines[range.end.line]!.length) {
-        post += this.lines[range.end.line]!.slice(range.end.character)
-      }
-
-      if (range.end.line < this.lines.length - 1) {
-        post += '\n' + this.lines.slice(range.end.line + 1, end + 1).join('\n')
-      }
-    }
-
-    return pre + highlight(main) + post
+    return result
   }
+}
+
+
+export interface Location {
+  file: File
+  range: Range
 }
