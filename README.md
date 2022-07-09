@@ -33,10 +33,10 @@ async main() {
   log(parsed.object['stuff'].object[1].location)
 
   // {
-  //   file: './stuff.yml',
+  //   file: File { ... },
   //   range: {
-  //     start: { line: 3, character: 5 },
-  //     end: { line: 3, character: 7 }
+  //     start: { line: 4, character: 4 },
+  //     end: { line: 4, character: 11 }
   //   }
   // }
   
