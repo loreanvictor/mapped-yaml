@@ -41,7 +41,7 @@ async main() {
   // }
   
   // 👉 get the contents of the file maybe with some surrounding lines even
-  log(parsed.location.file.range(parsed.object['stuff'].object[1].range, { surrounding: 1 }))
+  log(parsed.location.file.range(parsed.object['stuff'].object[1].location.range, { surrounding: 1 }))
   
   // {
   //   2: { content: 'stuff:', surround: true },
