@@ -30,7 +30,7 @@ async main() {
   assert(parsed.object['stuff'].object[1].object['foo'].object === 'bar')
   
   // 👉 access location of each node using `.location` property
-  log(parsed.object['stuff'].object[1].location)
+  console.log(parsed.object['stuff'].object[1].location)
 
   // {
   //   file: File { ... },
@@ -41,7 +41,7 @@ async main() {
   // }
   
   // 👉 get the contents of the file maybe with some surrounding lines even
-  log(
+  console.log(
     parsed.location.file.range(                          // --> returns the contents of the file for given range
       parsed.object['stuff'].object[0].location.range,   // --> the range of '- 42'
       { surrounding: 1 }                                 // --> also return 1 surrounding line.
