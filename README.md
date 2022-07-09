@@ -25,9 +25,9 @@ async main() {
   const parsed = parse(content, './stuff.yml')
 
   // 👉 access parsed contents of each node using `.object` property
-  assert(parsed.object['hellow'] === 'world')
-  assert(parsed.object['stuff'].object[0] === 42)
-  assert(parsed.object['stuff'].object[1].object['foo'] === 'bar')
+  assert(parsed.object['hellow'].object === 'world')
+  assert(parsed.object['stuff'].object[0].object === 42)
+  assert(parsed.object['stuff'].object[1].object['foo'].object === 'bar')
   
   // 👉 access location of each node using `.location` property
   log(parsed.object['stuff'].object[1].location)
