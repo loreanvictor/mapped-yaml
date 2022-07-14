@@ -3,10 +3,29 @@ import { parseDocument, Node, isSeq, isMap } from 'yaml'
 import { Location, File } from './file'
 
 
-export type MappedNode = {
-  object: number | string | boolean | MappedNode | MappedNode[] | { [key: string]: MappedNode }
+export type MappedPrimitive<T extends string | number | boolean>= {
+  object: T
   location: Location
 }
+
+
+export type MappedArray = {
+  object: MappedNode[]
+  location: Location
+}
+
+
+export type MappedObject = {
+  object: { [key: string]: MappedNode }
+  location: Location
+}
+
+export type MappedNode =
+  | MappedPrimitive<number>
+  | MappedPrimitive<boolean>
+  | MappedPrimitive<string>
+  | MappedArray
+  | MappedObject
 
 
 function process(node: Node, file: File): MappedNode {
@@ -37,7 +56,7 @@ function process(node: Node, file: File): MappedNode {
         }
 
         return acc
-      }, {}),
+      }, <{[key: string]: MappedNode}>{}),
       location: { range, file }
     }
   } else {
