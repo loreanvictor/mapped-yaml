@@ -1,6 +1,6 @@
 {
   "name": "mapped-yaml",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A simple yaml parser providing source map",
   "main": "dist/commonjs/index.js",
   "module": "dist/es/index.js",
