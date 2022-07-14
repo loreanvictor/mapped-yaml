@@ -4,7 +4,7 @@ import { Location, File } from './file'
 
 
 export type MappedNode = {
-  object: any
+  object: number | string | boolean | MappedNode | MappedNode[] | { [key: string]: MappedNode }
   location: Location
 }
 
@@ -25,7 +25,7 @@ function process(node: Node, file: File): MappedNode {
       object: node.items.reduce((acc, mapping) => {
         const key = process(mapping.key as Node, file)
         const value = process(mapping.value as Node, file)
-        acc[key.object] = {
+        acc[key.object as string] = {
           object: value.object,
           location: {
             range: {
