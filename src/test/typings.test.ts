@@ -1,5 +1,12 @@
-import { MappedNode } from '../parse'
-import { isNumberNode, isBooleanNode, isStringNode, isArrayNode, isObjectNode } from '../typings'
+import { type } from 'ts-inference-check'
+import { File } from 'mapped-file'
+
+import {
+  isNumberNode, isBooleanNode, isStringNode, isArrayNode, isObjectNode,
+  MappedNode, MappedPrimitive,
+  MappedObjectWithSchema,
+  MappedArrayWithSchema
+} from '../typings'
 
 
 describe(isNumberNode, () => {
@@ -8,7 +15,7 @@ describe(isNumberNode, () => {
       object: 1,
       location: {
         range: { start: { line: 0, character: 0}, end: { line: 0, character: 0 } },
-        file: { name: '', contents: '', lines: [], position: jest.fn(), offset: jest.fn(), range: jest.fn() }
+        file: new File('', '')
       }
     }
     expect(isNumberNode(node)).toBe(true)
@@ -19,7 +26,7 @@ describe(isNumberNode, () => {
       object: '1',
       location: {
         range: { start: { line: 0, character: 0}, end: { line: 0, character: 0 } },
-        file: { name: '', contents: '', lines: [], position: jest.fn(), offset: jest.fn(), range: jest.fn() }
+        file: new File('', '')
       }
     }
     expect(isNumberNode(node)).toBe(false)
@@ -33,7 +40,7 @@ describe(isBooleanNode, () => {
       object: true,
       location: {
         range: { start: { line: 0, character: 0}, end: { line: 0, character: 0 } },
-        file: { name: '', contents: '', lines: [], position: jest.fn(), offset: jest.fn(), range: jest.fn() }
+        file: new File('', '')
       }
     }
     expect(isBooleanNode(node)).toBe(true)
@@ -44,7 +51,7 @@ describe(isBooleanNode, () => {
       object: 'true',
       location: {
         range: { start: { line: 0, character: 0}, end: { line: 0, character: 0 } },
-        file: { name: '', contents: '', lines: [], position: jest.fn(), offset: jest.fn(), range: jest.fn() }
+        file: new File('', '')
       }
     }
     expect(isBooleanNode(node)).toBe(false)
@@ -58,7 +65,7 @@ describe(isStringNode, () => {
       object: '1',
       location: {
         range: { start: { line: 0, character: 0}, end: { line: 0, character: 0 } },
-        file: { name: '', contents: '', lines: [], position: jest.fn(), offset: jest.fn(), range: jest.fn() }
+        file: new File('', '')
       }
     }
     expect(isStringNode(node)).toBe(true)
@@ -69,7 +76,7 @@ describe(isStringNode, () => {
       object: 1,
       location: {
         range: { start: { line: 0, character: 0}, end: { line: 0, character: 0 } },
-        file: { name: '', contents: '', lines: [], position: jest.fn(), offset: jest.fn(), range: jest.fn() }
+        file: new File('', '')
       }
     }
     expect(isStringNode(node)).toBe(false)
@@ -81,7 +88,7 @@ describe(isArrayNode, () => {
   it('should return true if node is an array', () => {
     const location = {
       range: { start: { line: 0, character: 0}, end: { line: 0, character: 0 } },
-      file: { name: '', contents: '', lines: [], position: jest.fn(), offset: jest.fn(), range: jest.fn() }
+      file: new File('', '')
     }
 
     const primitive = { object: 1, location }
@@ -99,7 +106,7 @@ describe(isArrayNode, () => {
       object: {},
       location: {
         range: { start: { line: 0, character: 0}, end: { line: 0, character: 0 } },
-        file: { name: '', contents: '', lines: [], position: jest.fn(), offset: jest.fn(), range: jest.fn() }
+        file: new File('', '')
       }
     }
     expect(isArrayNode(node)).toBe(false)
@@ -111,7 +118,7 @@ describe(isObjectNode, () => {
   it('should return true if node is an object', () => {
     const location = {
       range: { start: { line: 0, character: 0}, end: { line: 0, character: 0 } },
-      file: { name: '', contents: '', lines: [], position: jest.fn(), offset: jest.fn(), range: jest.fn() }
+      file: new File('', '')
     }
 
     const primitive = { object: 1, location }
@@ -129,9 +136,38 @@ describe(isObjectNode, () => {
       object: [],
       location: {
         range: { start: { line: 0, character: 0}, end: { line: 0, character: 0 } },
-        file: { name: '', contents: '', lines: [], position: jest.fn(), offset: jest.fn(), range: jest.fn() }
+        file: new File('', '')
       }
     }
     expect(isObjectNode(node)).toBe(false)
+  })
+})
+
+
+describe('schema', () => {
+  test('it provides a nice way of schema testing.', () => {
+    function f(node: MappedObjectWithSchema<{
+      a: MappedPrimitive<string>,
+      b?: MappedArrayWithSchema<MappedPrimitive<number>>
+    }>) {
+      expect(type(node.object.a.object).is<string>(true)).toBe(true)
+
+      if (node.object.b) {
+        node.object.b.object.forEach(child => {
+          expect(type(child.object).is<number>(true)).toBe(true)
+        })
+      }
+    }
+
+    const file = new File('', '')
+    const location = { range: { start: { line: 0, character: 0}, end: { line: 0, character: 0 } }, file }
+
+    f({
+      object: {
+        a: { object: 'halo', location },
+        b: { object: [{ object: 42, location }], location }
+      },
+      location
+    })
   })
 })

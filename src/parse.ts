@@ -1,31 +1,7 @@
 import { parseDocument, Node, isSeq, isMap } from 'yaml'
+import { File } from 'mapped-file'
 
-import { Location, File } from './file'
-
-
-export type MappedPrimitive<T extends string | number | boolean>= {
-  object: T
-  location: Location
-}
-
-
-export type MappedArray = {
-  object: MappedNode[]
-  location: Location
-}
-
-
-export type MappedObject = {
-  object: { [key: string]: MappedNode }
-  location: Location
-}
-
-export type MappedNode =
-  | MappedPrimitive<number>
-  | MappedPrimitive<boolean>
-  | MappedPrimitive<string>
-  | MappedArray
-  | MappedObject
+import { MappedNode } from './typings'
 
 
 function process(node: Node, file: File): MappedNode {

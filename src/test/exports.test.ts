@@ -1,17 +1,13 @@
 import {
-  parse, File, MappedNode, MappedArray, MappedObject, MappedPrimitive,
+  parse, MappedNode, MappedArray, MappedObject, MappedPrimitive,
+  MappedArrayWithSchema, MappedObjectWithSchema,
   isNumberNode, isBooleanNode, isStringNode, isArrayNode, isObjectNode,
-  Range, Location, Position
 } from '../index'
 
 
 test('everything is properly exported.', () => {
   expect(parse).not.toBe(undefined)
-  expect(File).not.toBe(undefined)
   expect(<MappedNode>{}).not.toBe(undefined)
-  expect(<Range>{}).not.toBe(undefined)
-  expect(<Location>{}).not.toBe(undefined)
-  expect(<Position>{}).not.toBe(undefined)
   expect(<MappedArray>{}).not.toBe(undefined)
   expect(<MappedObject>{}).not.toBe(undefined)
   expect(<MappedPrimitive<number>>{}).not.toBe(undefined)
@@ -22,5 +18,7 @@ test('everything is properly exported.', () => {
   expect(isStringNode).not.toBe(undefined)
   expect(isArrayNode).not.toBe(undefined)
   expect(isObjectNode).not.toBe(undefined)
+  expect(<MappedArrayWithSchema<MappedObject>>{}).not.toBe(undefined)
+  expect(<MappedObjectWithSchema<{ a: MappedPrimitive<string> }>>{}).not.toBe(undefined)
 })
 
